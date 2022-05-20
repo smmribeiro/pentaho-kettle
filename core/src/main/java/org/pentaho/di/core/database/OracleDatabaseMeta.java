@@ -565,7 +565,7 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
    */
   @Override
   public boolean supportsPreparedStatementMetadataRetrieval() {
-    return false;
+    return true;
   }
 
   /**
