@@ -1788,10 +1788,10 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterfaceEx
    */
   @Override
   public String quoteSQLString( String string ) {
-    string = string.replaceAll( "'", "''" );
-    string = string.replaceAll( "\\n", "\\\\n" );
-    string = string.replaceAll( "\\r", "\\\\r" );
-    return "'" + string + "'";
+    string = string.replace( "'", "''" );
+    string = string.replace( "\\n", "\\\\n" );
+    string = string.replace( "\\r", "\\\\r" );
+    return '\'' + string + '\'';
   }
 
   /**
@@ -2178,18 +2178,19 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterfaceEx
           ins.append( string );
           break;
         case ValueMetaInterface.TYPE_DATE:
-          Date date = valueMeta.getDate( valueData );
-
+          ins.append( '\'' );
           if ( Utils.isEmpty( dateFormat ) ) {
-            ins.append( "'" + valueMeta.getString( valueData ) + "'" );
+            ins.append( valueMeta.getString( valueData ) );
           } else {
+            Date date = valueMeta.getDate( valueData );
             try {
               java.text.SimpleDateFormat formatter = new java.text.SimpleDateFormat( dateFormat );
-              ins.append( "'" + formatter.format( date ) + "'" );
+              ins.append( formatter.format( date ) );
             } catch ( Exception e ) {
               throw new KettleValueException( "Error : ", e );
             }
           }
+          ins.append( '\'' );
           break;
         default:
           ins.append( valueMeta.getString( valueData ) );

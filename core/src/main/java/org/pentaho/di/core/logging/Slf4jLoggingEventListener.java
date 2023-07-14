@@ -52,7 +52,7 @@ public class Slf4jLoggingEventListener implements KettleLoggingEventListener {
   @VisibleForTesting Logger diLogger = LoggerFactory.getLogger( "org.pentaho.di" );
 
   @VisibleForTesting Function<String, LoggingObjectInterface> logObjProvider =
-    ( objId ) -> LoggingRegistry.getInstance().getLoggingObject( objId );
+          objId -> LoggingRegistry.getInstance().getLoggingObject( objId );
 
   private static final String SEPARATOR = "/";
 
@@ -140,7 +140,7 @@ public class Slf4jLoggingEventListener implements KettleLoggingEventListener {
       }
       loggingObject = loggingObject.getParent();
     }
-    if ( subjects.size() > 0 ) {
+    if ( !subjects.isEmpty() ) {
       return subjects.size() > 1 ? formatDetailedSubject( subjects ) : subjects.get( 0 );
     } else {
       return "";

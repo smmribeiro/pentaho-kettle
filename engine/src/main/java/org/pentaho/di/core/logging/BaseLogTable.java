@@ -45,19 +45,23 @@ import org.w3c.dom.Node;
 
 public abstract class BaseLogTable {
   public static final String XML_TAG = "field";
+  private static final String PARAMETER_PREFIX = "${";
+  private static final String PARAMETER_SUFFIX = "}";
+  private static final int PARAMETER_PREFIX_LEN = PARAMETER_PREFIX.length();
+  private static final int PARAMETER_SUFFIX_LEN = PARAMETER_SUFFIX.length();
 
-  public static String PROP_LOG_TABLE_CONNECTION_NAME = "_LOG_TABLE_CONNECTION_NAME";
-  public static String PROP_LOG_TABLE_SCHEMA_NAME = "_LOG_TABLE_SCHEMA_NAME";
-  public static String PROP_LOG_TABLE_TABLE_NAME = "_LOG_TABLE_TABLE_NAME";
+  public static final String PROP_LOG_TABLE_CONNECTION_NAME = "_LOG_TABLE_CONNECTION_NAME";
+  public static final String PROP_LOG_TABLE_SCHEMA_NAME = "_LOG_TABLE_SCHEMA_NAME";
+  public static final String PROP_LOG_TABLE_TABLE_NAME = "_LOG_TABLE_TABLE_NAME";
 
-  public static String PROP_LOG_TABLE_FIELD_ID = "_LOG_TABLE_FIELD_ID";
-  public static String PROP_LOG_TABLE_FIELD_NAME = "_LOG_TABLE_FIELD_NAME";
-  public static String PROP_LOG_TABLE_FIELD_ENABLED = "_LOG_TABLE_FIELD_ENABLED";
-  public static String PROP_LOG_TABLE_FIELD_SUBJECT = "_LOG_TABLE_FIELD_SUBJECT";
+  public static final String PROP_LOG_TABLE_FIELD_ID = "_LOG_TABLE_FIELD_ID";
+  public static final String PROP_LOG_TABLE_FIELD_NAME = "_LOG_TABLE_FIELD_NAME";
+  public static final String PROP_LOG_TABLE_FIELD_ENABLED = "_LOG_TABLE_FIELD_ENABLED";
+  public static final String PROP_LOG_TABLE_FIELD_SUBJECT = "_LOG_TABLE_FIELD_SUBJECT";
 
-  public static String PROP_LOG_TABLE_INTERVAL = "LOG_TABLE_INTERVAL";
-  public static String PROP_LOG_TABLE_SIZE_LIMIT = "LOG_TABLE_SIZE_LIMIT";
-  public static String PROP_LOG_TABLE_TIMEOUT_DAYS = "_LOG_TABLE_TIMEOUT_IN_DAYS";
+  public static final String PROP_LOG_TABLE_INTERVAL = "LOG_TABLE_INTERVAL";
+  public static final String PROP_LOG_TABLE_SIZE_LIMIT = "LOG_TABLE_SIZE_LIMIT";
+  public static final String PROP_LOG_TABLE_TIMEOUT_DAYS = "_LOG_TABLE_TIMEOUT_IN_DAYS";
 
   protected VariableSpace space;
   protected HasDatabasesInterface databasesInterface;
@@ -524,7 +528,7 @@ public abstract class BaseLogTable {
       }
     }
 
-    return buffer.append( Const.CR + status.getStatus().toUpperCase() + Const.CR ).toString();
+    return buffer.append( Const.CR ).append( status.getStatus().toUpperCase() ).append( Const.CR ).toString();
   }
 
   // PDI-7070: implement equals for comparison of job/trans log table to its parent log table
@@ -547,7 +551,7 @@ public abstract class BaseLogTable {
   }
 
   public void setAllGlobalParametersToNull() {
-    boolean clearGlobalVariables = Boolean.valueOf( System.getProperties().getProperty( Const.KETTLE_GLOBAL_LOG_VARIABLES_CLEAR_ON_EXPORT, "false" ) );
+    boolean clearGlobalVariables = Boolean.parseBoolean( System.getProperties().getProperty( Const.KETTLE_GLOBAL_LOG_VARIABLES_CLEAR_ON_EXPORT, "false" ) );
     if ( clearGlobalVariables ) {
       schemaName = isGlobalParameter( schemaName ) ? null : schemaName;
       connectionName = isGlobalParameter( connectionName ) ? null : connectionName;
@@ -557,12 +561,10 @@ public abstract class BaseLogTable {
   }
 
   protected boolean isGlobalParameter( String parameter ) {
-    if ( parameter == null ) {
-      return false;
-    }
-
-    if ( parameter.startsWith( "${" ) && parameter.endsWith( "}" ) ) {
-      return System.getProperty( parameter.substring( 2, parameter.length() - 1 ) ) != null;
+    if ( parameter != null && parameter.startsWith( PARAMETER_PREFIX ) && parameter.endsWith( PARAMETER_SUFFIX ) ) {
+      return
+        System.getProperty( parameter.substring( PARAMETER_PREFIX_LEN, parameter.length() - PARAMETER_SUFFIX_LEN ) )
+          != null;
     }
 
     return false;

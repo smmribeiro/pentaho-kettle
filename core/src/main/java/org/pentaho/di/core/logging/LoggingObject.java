@@ -70,31 +70,31 @@ public class LoggingObject implements LoggingObjectInterface {
     }
 
     try {
-      LoggingObject loggingObject = (LoggingObject) obj;
+      LoggingObject loggingObject2 = (LoggingObject) obj;
 
       // No carte object id specified on either side OR the same carte object id means: the same family.
       //
       boolean sameCarteFamily =
-        ( getContainerObjectId() == null && loggingObject.getContainerObjectId() == null )
-          || ( getContainerObjectId() != null && loggingObject.getContainerObjectId() != null && getContainerObjectId()
-            .equals( loggingObject.getContainerObjectId() ) );
+        ( getContainerObjectId() == null && loggingObject2.getContainerObjectId() == null )
+          || ( getContainerObjectId() != null && getContainerObjectId()
+            .equals( loggingObject2.getContainerObjectId() ) );
 
       // See if we recognize the repository ID, this is an absolute match
       //
       if ( sameCarteFamily
-        && loggingObject.getObjectId() != null && loggingObject.getObjectId().equals( getObjectId() ) ) {
+        && loggingObject2.getObjectId() != null && loggingObject2.getObjectId().equals( getObjectId() ) ) {
         return true;
       }
 
       // Check if objects have the same parent
       boolean sameParents =
-          loggingObject.getParent() == null && this.getParent() == null || loggingObject.getParent() != null
-              && this.getParent() != null && loggingObject.getParent().equals( this.getParent() );
+          loggingObject2.getParent() == null && this.getParent() == null || loggingObject2.getParent() != null
+              && this.getParent() != null && loggingObject2.getParent().equals( this.getParent() );
 
       // If the filename is the same and parent is the same, it's the same object...
-      if ( sameCarteFamily && !Utils.isEmpty( loggingObject.getFilename() )
-          && loggingObject.getFilename().equals( getFilename() ) && sameParents
-              && StringUtils.equals( loggingObject.getObjectName(), getObjectName() ) ) {
+      if ( sameCarteFamily && !Utils.isEmpty( loggingObject2.getFilename() )
+          && loggingObject2.getFilename().equals( getFilename() ) && sameParents
+              && StringUtils.equals( loggingObject2.getObjectName(), getObjectName() ) ) {
         return true;
       }
 
@@ -102,23 +102,23 @@ public class LoggingObject implements LoggingObjectInterface {
       // This will catch most matches except for the most exceptional use-case.
       //
       if ( !sameCarteFamily
-        || ( loggingObject.getObjectName() == null && getObjectName() != null )
-        || ( loggingObject.getObjectName() != null && getObjectName() == null ) ) {
+        || ( loggingObject2.getObjectName() == null && getObjectName() != null )
+        || ( loggingObject2.getObjectName() != null && getObjectName() == null ) ) {
         return false;
       }
 
       if ( sameCarteFamily
-        && ( ( loggingObject.getObjectName() == null && getObjectName() == null ) || ( loggingObject
+        && ( ( loggingObject2.getObjectName() == null && getObjectName() == null ) || ( loggingObject2
           .getObjectName().equals( getObjectName() ) ) )
-        && loggingObject.getObjectType().equals( getObjectType() ) ) {
+        && loggingObject2.getObjectType().equals( getObjectType() ) ) {
 
         // If there are multiple copies of this object, they both need their own channel
         //
-        if ( !Utils.isEmpty( getObjectCopy() ) && !getObjectCopy().equals( loggingObject.getObjectCopy() ) ) {
+        if ( !Utils.isEmpty( getObjectCopy() ) && !getObjectCopy().equals( loggingObject2.getObjectCopy() ) ) {
           return false;
         }
 
-        LoggingObjectInterface parent1 = loggingObject.getParent();
+        LoggingObjectInterface parent1 = loggingObject2.getParent();
         LoggingObjectInterface parent2 = getParent();
 
         if ( ( parent1 != null && parent2 == null ) || ( parent1 == null && parent2 != null ) ) {
@@ -197,14 +197,13 @@ public class LoggingObject implements LoggingObjectInterface {
     // Extract the hierarchy information from the parentObject...
     //
     LoggingObject check = new LoggingObject( parentObject );
-    LoggingObjectInterface loggingObject = registry.findExistingLoggingSource( check );
-    if ( loggingObject == null ) {
-      String logChannelId = registry.registerLoggingSource( check );
-      loggingObject = check;
-      check.setLogChannelId( logChannelId );
+    LoggingObjectInterface existingLoggingSource = registry.findExistingLoggingSource( check );
+    if ( existingLoggingSource == null ) {
+      parent = check;
+      check.setLogChannelId( registry.registerLoggingSource( check ) );
+    } else {
+      parent = existingLoggingSource;
     }
-
-    parent = loggingObject;
   }
 
   /**
@@ -296,7 +295,7 @@ public class LoggingObject implements LoggingObjectInterface {
   }
 
   /**
-   * @param id
+   * @param logChannelId
    *          the id to set
    */
   public void setLogChannelId( String logChannelId ) {
@@ -344,7 +343,7 @@ public class LoggingObject implements LoggingObjectInterface {
   }
 
   /**
-   * @param copy
+   * @param objectCopy
    *          the copy to set
    */
   public void setObjectCopy( String objectCopy ) {

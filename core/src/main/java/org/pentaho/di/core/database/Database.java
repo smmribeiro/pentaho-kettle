@@ -2187,23 +2187,23 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
       crIndex.append( "BITMAP " );
     }
 
-    crIndex.append( "INDEX " ).append( databaseMeta.quoteField( indexname ) ).append( " " );
+    crIndex.append( "INDEX " ).append( databaseMeta.quoteField( indexname ) ).append( ' ' );
     crIndex.append( "ON " );
     // assume table has already been quoted (and possibly includes schema)
     crIndex.append( tablename );
-    crIndex.append( "(" );
+    crIndex.append( '(' );
     for ( int i = 0; i < idxFields.length; i++ ) {
       if ( i > 0 ) {
         crIndex.append( ", " );
       }
       crIndex.append( databaseMeta.quoteField( idxFields[ i ] ) );
     }
-    crIndex.append( ")" ).append( Const.CR );
+    crIndex.append( ')' ).append( Const.CR );
 
     crIndex.append( databaseInterface.getIndexTablespaceDDL( variables, databaseMeta ) );
 
     if ( semiColon ) {
-      crIndex.append( ";" ).append( Const.CR );
+      crIndex.append( ';' ).append( Const.CR );
     }
 
     return crIndex.toString();
@@ -2629,7 +2629,7 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
     if ( databaseMeta.isMySQLVariant() ) {
       name = databaseMeta.getDatabaseInterface().getLegacyColumnName( getDatabaseMetaData(), rm, i );
     } else {
-      name = new String( rm.getColumnName( i ) );
+      name = rm.getColumnName( i );
     }
 
     // Check the name, sometimes it's empty.
@@ -2819,9 +2819,9 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
         if ( "BETWEEN".equalsIgnoreCase( condition[ i ] ) ) {
           sql.append( " BETWEEN ? AND ? " );
         } else if ( "IS NULL".equalsIgnoreCase( condition[ i ] ) || "IS NOT NULL".equalsIgnoreCase( condition[ i ] ) ) {
-          sql.append( " " ).append( condition[ i ] ).append( " " );
+          sql.append( ' ' ).append( condition[ i ] ).append( ' ' );
         } else {
-          sql.append( " " ).append( condition[ i ] ).append( " ? " );
+          sql.append( ' ' ).append( condition[ i ] ).append( " ? " );
         }
       }
 
@@ -2941,9 +2941,9 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
         if ( "BETWEEN".equalsIgnoreCase( condition[ i ] ) ) {
           sql.append( " BETWEEN ? AND ? " );
         } else if ( "IS NULL".equalsIgnoreCase( condition[ i ] ) || "IS NOT NULL".equalsIgnoreCase( condition[ i ] ) ) {
-          sql.append( " " ).append( condition[ i ] ).append( " " );
+          sql.append( ' ' ).append( condition[ i ] ).append( ' ' );
         } else {
-          sql.append( " " ).append( condition[ i ] ).append( " ? " );
+          sql.append( ' ' ).append( condition[ i ] ).append( " ? " );
         }
       }
 
@@ -2974,10 +2974,10 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
       if ( returnvalue != null && returnvalue.length() != 0 ) {
         sql.append( "? = " );
       }
-      sql.append( "call " ).append( proc ).append( " " );
+      sql.append( "call " ).append( proc ).append( ' ' );
 
       if ( arg.length > 0 ) {
-        sql.append( "(" );
+        sql.append( '(' );
       }
 
       for ( int i = 0; i < arg.length; i++ ) {
@@ -2988,10 +2988,10 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
       }
 
       if ( arg.length > 0 ) {
-        sql.append( ")" );
+        sql.append( ')' );
       }
 
-      sql.append( "}" );
+      sql.append( '}' );
 
       try {
         if ( log.isDetailed() ) {
@@ -3171,7 +3171,7 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
     retval.append( databaseInterface.getCreateTableStatement() );
 
     retval.append( tableName + Const.CR );
-    retval.append( "(" ).append( Const.CR );
+    retval.append( '(' ).append( Const.CR );
     for ( int i = 0; i < fields.size(); i++ ) {
       if ( i > 0 ) {
         retval.append( ", " );
@@ -3187,17 +3187,17 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
     // Technical keys
     if ( tk != null ) {
       if ( databaseMeta.requiresCreateTablePrimaryKeyAppend() ) {
-        retval.append( ", PRIMARY KEY (" ).append( tk ).append( ")" ).append( Const.CR );
+        retval.append( ", PRIMARY KEY (" ).append( tk ).append( ')' ).append( Const.CR );
       }
     }
 
     // Primary keys
     if ( pk != null ) {
       if ( databaseMeta.requiresCreateTablePrimaryKeyAppend() ) {
-        retval.append( ", PRIMARY KEY (" ).append( pk ).append( ")" ).append( Const.CR );
+        retval.append( ", PRIMARY KEY (" ).append( pk ).append( ')' ).append( Const.CR );
       }
     }
-    retval.append( ")" ).append( Const.CR );
+    retval.append( ')' ).append( Const.CR );
 
     retval.append( databaseMeta.getDatabaseInterface().getDataTablespaceDDL( variables, databaseMeta ) );
 
@@ -3207,7 +3207,7 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
     }
 
     if ( semicolon ) {
-      retval.append( ";" );
+      retval.append( ';' );
     }
 
     return retval.toString();
@@ -3622,21 +3622,17 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
 
     String jobtrans = job ? databaseMeta.quoteField( "JOBNAME" ) : databaseMeta.quoteField( "TRANSNAME" );
 
-    String sql = "";
-    sql +=
-      " SELECT "
-        + databaseMeta.quoteField( "ENDDATE" ) + ", " + databaseMeta.quoteField( "DEPDATE" ) + ", "
-        + databaseMeta.quoteField( "STARTDATE" );
-    sql += " FROM " + logtable;
-    sql += " WHERE  " + databaseMeta.quoteField( "ERRORS" ) + "    = 0";
-    sql += " AND    " + databaseMeta.quoteField( "STATUS" ) + "    = 'end'";
-    sql += " AND    " + jobtrans + " = ?";
-    sql +=
-      " ORDER BY "
-        + databaseMeta.quoteField( "LOGDATE" ) + " DESC, " + databaseMeta.quoteField( "ENDDATE" ) + " DESC";
+    StringBuilder sb = new StringBuilder( 256 );
+    sb.append( " SELECT " ).append( databaseMeta.quoteField( "ENDDATE" ) ).append( ", " )
+      .append( databaseMeta.quoteField( "DEPDATE" ) ).append( ", " ).append( databaseMeta.quoteField( "STARTDATE" ) )
+      .append( " FROM " ).append( logtable ).append( " WHERE " ).append( databaseMeta.quoteField( "ERRORS" ) )
+      .append( " = 0" ).append( " AND " ).append( databaseMeta.quoteField( "STATUS" ) ).append( " = 'end'" )
+      .append( " AND " ).append( jobtrans + " = ?" ).append( " ORDER BY " )
+      .append( databaseMeta.quoteField( "LOGDATE" ) ).append( " DESC, " ).append( databaseMeta.quoteField( "ENDDATE" ) )
+      .append( " DESC" );
 
     try {
-      pstmt = connection.prepareStatement( databaseMeta.stripCR( sql ) );
+      pstmt = connection.prepareStatement( databaseMeta.stripCR( sb ) );
 
       RowMetaInterface r = new RowMeta();
       r.addValueMeta( new ValueMetaString( "TRANSNAME", 255, -1 ) );
@@ -3692,7 +3688,7 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
             "Error getting the first long value from the max value returned from table : " + schemaTable );
         }
         counter = new Counter( previous + 1, 1 );
-        nextValue = Long.valueOf( counter.next() );
+        nextValue = counter.next();
         if ( counters != null ) {
           counters.put( lookup, counter );
         }
@@ -3700,7 +3696,7 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
         throw new KettleDatabaseException( "Couldn't find maximum key value from table " + schemaTable );
       }
     } else {
-      nextValue = Long.valueOf( counter.next() );
+      nextValue = counter.next();
     }
 
     return nextValue;
@@ -4273,12 +4269,12 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
           String procSchema = rowMeta.getString( row, "PROCEDURE_SCHEM", null );
           String procName = rowMeta.getString( row, "PROCEDURE_NAME", "" );
 
-          StringBuilder name = new StringBuilder( "" );
+          StringBuilder name = new StringBuilder( );
           if ( procCatalog != null ) {
-            name.append( procCatalog ).append( "." );
+            name.append( procCatalog ).append( '.' );
           }
           if ( procSchema != null ) {
-            name.append( procSchema ).append( "." );
+            name.append( procSchema ).append( '.' );
           }
 
           name.append( procName );
@@ -4723,7 +4719,7 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
         Object valueData = r[ i ];
 
         if ( i > 0 ) {
-          ins.append( "," );
+          ins.append( ',' );
         }
 
         // Check for null values...
@@ -4755,12 +4751,12 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
                   ins.append( "TO_DATE('" ).append( fieldDateFormatters[ i ].format( date ) ).append(
                     "', 'YYYY/MM/DD HH24:MI:SS')" );
                 } else {
-                  ins.append( "'" + fields.getString( r, i ) + "'" );
+                  ins.append( '\'' ).append( fields.getString( r, i ) ).append( '\'' );
                 }
               } else {
                 try {
                   java.text.SimpleDateFormat formatter = new java.text.SimpleDateFormat( dateFormat );
-                  ins.append( "'" + formatter.format( fields.getDate( r, i ) ) + "'" );
+                  ins.append( '\'' ).append( formatter.format( fields.getDate( r, i ) ) ).append( '\'' );
                 } catch ( Exception e ) {
                   throw new KettleDatabaseException( "Error : ", e );
                 }
@@ -4994,8 +4990,6 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
 
       is = KettleVFS.getInputStream( sqlFile );
       bis = new InputStreamReader( new BufferedInputStream( is, 500 ) );
-      StringBuilder lineStringBuilder = new StringBuilder( 256 );
-      lineStringBuilder.setLength( 0 );
 
       BufferedReader buff = new BufferedReader( bis );
       String sLine = null;

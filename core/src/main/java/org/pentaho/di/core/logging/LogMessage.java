@@ -35,16 +35,16 @@ import org.pentaho.di.core.util.StringUtil;
 public class LogMessage implements LogMessageInterface {
   private String logChannelId;
   private String message;
-  private String subject;
-  private Object[] arguments;
+  private String subject = null;
+  private Object[] arguments = null;
   private LogLevel level;
-  private String copy;
+  private String copy = null;
 
   /**
    * Backward compatibility : no registry used, just log the subject as part of the message
    *
-   * @param message
-   * @param logChannelId
+   * @param subject
+   * @param level
    */
   public LogMessage( String subject, LogLevel level ) {
     this.subject = subject;
@@ -80,12 +80,11 @@ public class LogMessage implements LogMessageInterface {
     // Derive the subject from the registry
     //
     LoggingObjectInterface loggingObject = LoggingRegistry.getInstance().getLoggingObject( logChannelId );
-    boolean detailedLogTurnOn = "Y".equals( EnvUtil.getSystemProperty( Const.KETTLE_LOG_MARK_MAPPINGS ) ) ? true : false;
     if ( loggingObject != null ) {
-      if ( !detailedLogTurnOn ) {
-        subject = loggingObject.getObjectName();
-      } else {
+      if ( "Y".equals( EnvUtil.getSystemProperty( Const.KETTLE_LOG_MARK_MAPPINGS ) ) ) {
         subject = getDetailedSubject( loggingObject );
+      } else {
+        subject = loggingObject.getObjectName();
       }
       copy = loggingObject.getObjectCopy();
     }
@@ -105,7 +104,7 @@ public class LogMessage implements LogMessageInterface {
    * @param loggingObject
    */
   private List<String> getSubjectTree( LoggingObjectInterface loggingObject ) {
-    List<String> subjects = new ArrayList<String>();
+    List<String> subjects = new ArrayList<>();
     while ( loggingObject != null ) {
       subjects.add( loggingObject.getObjectName() );
       loggingObject = loggingObject.getParent();
@@ -114,19 +113,17 @@ public class LogMessage implements LogMessageInterface {
   }
 
   /**
-   * @param string
    * @param subjects
    * @return
    */
   private String formatDetailedSubject( List<String> subjects ) {
 
     StringBuilder string = new StringBuilder();
-
     int currentStep = 0;
     int rootStep = subjects.size() - 1;
 
     for ( int i = rootStep - 1; i > currentStep; i-- ) {
-      string.append( "[" ).append( subjects.get( i ) ).append( "]" ).append( "." );
+      string.append( '[' ).append( subjects.get( i ) ).append( ']' ).append( '.' );
     }
     string.append( subjects.get( currentStep ) );
     return string.toString();
