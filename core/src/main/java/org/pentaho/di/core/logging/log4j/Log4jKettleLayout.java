@@ -78,7 +78,7 @@ public class Log4jKettleLayout extends AbstractStringLayout implements Log4jLayo
         if ( message.getSubject() != null ) {
           line.append( message.getSubject() );
           if ( message.getCopy() != null ) {
-            line.append( "." ).append( message.getCopy() );
+            line.append( '.' ).append( message.getCopy() );
           }
           line.append( " - " );
         }

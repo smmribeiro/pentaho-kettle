@@ -75,7 +75,7 @@ public class KettleLogLayout {
         if ( message.getSubject() != null ) {
           line.append( message.getSubject() );
           if ( message.getCopy() != null ) {
-            line.append( "." ).append( message.getCopy() );
+            line.append( '.' ).append( message.getCopy() );
           }
           line.append( " - " );
         }

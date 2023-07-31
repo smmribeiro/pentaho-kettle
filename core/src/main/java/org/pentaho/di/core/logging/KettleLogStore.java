@@ -34,16 +34,17 @@ import org.pentaho.di.core.util.EnvUtil;
 
 public class KettleLogStore {
 
+  private static final long MINUTES_IN_MILLI = 60L * 1000L;
   public static PrintStream OriginalSystemOut = System.out;
   public static PrintStream OriginalSystemErr = System.err;
 
-  private static KettleLogStore store;
+  private static KettleLogStore store = null;
 
   private LoggingBuffer appender;
 
   private Timer logCleanerTimer;
 
-  private static AtomicBoolean initialized = new AtomicBoolean( false );
+  private static final AtomicBoolean initialized = new AtomicBoolean( false );
 
   private static LogChannelInterfaceFactory logChannelInterfaceFactory = new LogChannelFactory();
 
@@ -85,9 +86,8 @@ public class KettleLogStore {
     TimerTask timerTask = new TimerTask() {
       @Override
       public void run() {
-
         if ( maxLogTimeoutMinutes > 0 ) {
-          long minTimeBoundary = new Date().getTime() - maxLogTimeoutMinutes * 60 * 1000;
+          long minTimeBoundary = new Date().getTime() - maxLogTimeoutMinutes * MINUTES_IN_MILLI;
 
           // Remove all the old lines.
           appender.removeBufferLinesBefore( minTimeBoundary );
@@ -98,7 +98,6 @@ public class KettleLogStore {
     // Clean out the rows every 10 seconds to get a nice steady purge operation...
     //
     logCleanerTimer.schedule( timerTask, 10000, 10000 );
-
   }
 
   /**

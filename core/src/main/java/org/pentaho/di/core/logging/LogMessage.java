@@ -43,8 +43,8 @@ public class LogMessage implements LogMessageInterface {
   /**
    * Backward compatibility : no registry used, just log the subject as part of the message
    *
-   * @param message
-   * @param logChannelId
+   * @param subject
+   * @param level
    */
   public LogMessage( String subject, LogLevel level ) {
     this.subject = subject;
@@ -104,7 +104,7 @@ public class LogMessage implements LogMessageInterface {
    * @param loggingObject
    */
   private List<String> getSubjectTree( LoggingObjectInterface loggingObject ) {
-    List<String> subjects = new ArrayList<String>();
+    List<String> subjects = new ArrayList<>();
     while ( loggingObject != null ) {
       subjects.add( loggingObject.getObjectName() );
       loggingObject = loggingObject.getParent();
@@ -113,7 +113,6 @@ public class LogMessage implements LogMessageInterface {
   }
 
   /**
-   * @param string
    * @param subjects
    * @return
    */
@@ -124,7 +123,7 @@ public class LogMessage implements LogMessageInterface {
     int rootStep = subjects.size() - 1;
 
     for ( int i = rootStep - 1; i > currentStep; i-- ) {
-      string.append( "[" ).append( subjects.get( i ) ).append( "]" ).append( "." );
+      string.append( '[' ).append( subjects.get( i ) ).append( ']' ).append( '.' );
     }
     string.append( subjects.get( currentStep ) );
     return string.toString();

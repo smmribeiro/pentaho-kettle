@@ -37,18 +37,16 @@ import org.pentaho.di.core.metrics.MetricsSnapshotInterface;
  *
  */
 public class MetricsRegistry {
-  private static MetricsRegistry registry = new MetricsRegistry();
+  private static final MetricsRegistry registry = new MetricsRegistry();
 
-  private Map<String, Map<String, MetricsSnapshotInterface>> snapshotMaps;
-  private Map<String, Queue<MetricsSnapshotInterface>> snapshotLists;
+  private final Map<String, Map<String, MetricsSnapshotInterface>> snapshotMaps = new ConcurrentHashMap<>();
+  private final Map<String, Queue<MetricsSnapshotInterface>> snapshotLists = new ConcurrentHashMap<>();
 
   public static MetricsRegistry getInstance() {
     return registry;
   }
 
   private MetricsRegistry() {
-    snapshotMaps = new ConcurrentHashMap<String, Map<String, MetricsSnapshotInterface>>();
-    snapshotLists = new ConcurrentHashMap<String, Queue<MetricsSnapshotInterface>>();
   }
 
   public void addSnapshot( LogChannelInterface logChannel, MetricsSnapshotInterface snapshot ) {
@@ -90,13 +88,7 @@ public class MetricsRegistry {
    * @return an existing or a new metrics snapshot list.
    */
   public Queue<MetricsSnapshotInterface> getSnapshotList( String logChannelId ) {
-    Queue<MetricsSnapshotInterface> list = snapshotLists.get( logChannelId );
-    if ( list == null ) {
-      list = new ConcurrentLinkedQueue<MetricsSnapshotInterface>();
-      snapshotLists.put( logChannelId, list );
-    }
-    return list;
-
+    return snapshotLists.computeIfAbsent( logChannelId, s -> new ConcurrentLinkedQueue<>() );
   }
 
   /**
@@ -107,12 +99,7 @@ public class MetricsRegistry {
    * @return an existing or a new metrics snapshot map.
    */
   public Map<String, MetricsSnapshotInterface> getSnapshotMap( String logChannelId ) {
-    Map<String, MetricsSnapshotInterface> map = snapshotMaps.get( logChannelId );
-    if ( map == null ) {
-      map = new ConcurrentHashMap<String, MetricsSnapshotInterface>();
-      snapshotMaps.put( logChannelId, map );
-    }
-    return map;
+    return snapshotMaps.computeIfAbsent( logChannelId, s -> new ConcurrentHashMap<>() );
   }
 
   public void reset() {
