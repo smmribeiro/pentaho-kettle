@@ -70,13 +70,12 @@ public class LogBrowser {
   private StyledText text;
   private LogParentProvidedInterface logProvider;
   private List<String> childIds = new ArrayList<>();
-  private Date lastLogRegistryChange;
-  private AtomicBoolean paused;
+  private Date lastLogRegistryChange = null;
+  private final AtomicBoolean paused = new AtomicBoolean( false );
 
   public LogBrowser( final StyledText text, final LogParentProvidedInterface logProvider ) {
     this.text = text;
     this.logProvider = logProvider;
-    this.paused = new AtomicBoolean( false );
   }
 
   public void installLogSniffer() {

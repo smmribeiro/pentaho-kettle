@@ -35,10 +35,10 @@ import org.pentaho.di.core.util.StringUtil;
 public class LogMessage implements LogMessageInterface {
   private String logChannelId;
   private String message;
-  private String subject;
-  private Object[] arguments;
+  private String subject = null;
+  private Object[] arguments = null;
   private LogLevel level;
-  private String copy;
+  private String copy = null;
 
   /**
    * Backward compatibility : no registry used, just log the subject as part of the message
@@ -80,12 +80,11 @@ public class LogMessage implements LogMessageInterface {
     // Derive the subject from the registry
     //
     LoggingObjectInterface loggingObject = LoggingRegistry.getInstance().getLoggingObject( logChannelId );
-    boolean detailedLogTurnOn = "Y".equals( EnvUtil.getSystemProperty( Const.KETTLE_LOG_MARK_MAPPINGS ) ) ? true : false;
     if ( loggingObject != null ) {
-      if ( !detailedLogTurnOn ) {
-        subject = loggingObject.getObjectName();
-      } else {
+      if ( "Y".equals( EnvUtil.getSystemProperty( Const.KETTLE_LOG_MARK_MAPPINGS ) ) ) {
         subject = getDetailedSubject( loggingObject );
+      } else {
+        subject = loggingObject.getObjectName();
       }
       copy = loggingObject.getObjectCopy();
     }
@@ -121,7 +120,6 @@ public class LogMessage implements LogMessageInterface {
   private String formatDetailedSubject( List<String> subjects ) {
 
     StringBuilder string = new StringBuilder();
-
     int currentStep = 0;
     int rootStep = subjects.size() - 1;
 

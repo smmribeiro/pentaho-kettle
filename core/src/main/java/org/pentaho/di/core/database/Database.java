@@ -3677,21 +3677,17 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
 
     String jobtrans = job ? databaseMeta.quoteField( "JOBNAME" ) : databaseMeta.quoteField( "TRANSNAME" );
 
-    String sql = "";
-    sql +=
-      " SELECT "
-        + databaseMeta.quoteField( "ENDDATE" ) + ", " + databaseMeta.quoteField( "DEPDATE" ) + ", "
-        + databaseMeta.quoteField( "STARTDATE" );
-    sql += " FROM " + logtable;
-    sql += " WHERE  " + databaseMeta.quoteField( "ERRORS" ) + "    = 0";
-    sql += " AND    " + databaseMeta.quoteField( "STATUS" ) + "    = 'end'";
-    sql += " AND    " + jobtrans + " = ?";
-    sql +=
-      " ORDER BY "
-        + databaseMeta.quoteField( "LOGDATE" ) + " DESC, " + databaseMeta.quoteField( "ENDDATE" ) + " DESC";
+    StringBuilder sb = new StringBuilder( 256 );
+    sb.append( " SELECT " ).append( databaseMeta.quoteField( "ENDDATE" ) ).append( ", " )
+      .append( databaseMeta.quoteField( "DEPDATE" ) ).append( ", " ).append( databaseMeta.quoteField( "STARTDATE" ) )
+      .append( " FROM " ).append( logtable ).append( " WHERE " ).append( databaseMeta.quoteField( "ERRORS" ) )
+      .append( " = 0" ).append( " AND " ).append( databaseMeta.quoteField( "STATUS" ) ).append( " = 'end'" )
+      .append( " AND " ).append( jobtrans + " = ?" ).append( " ORDER BY " )
+      .append( databaseMeta.quoteField( "LOGDATE" ) ).append( " DESC, " ).append( databaseMeta.quoteField( "ENDDATE" ) )
+      .append( " DESC" );
 
     try {
-      pstmt = connection.prepareStatement( databaseMeta.stripCR( sql ) );
+      pstmt = connection.prepareStatement( databaseMeta.stripCR( sb ) );
 
       RowMetaInterface r = new RowMeta();
       r.addValueMeta( new ValueMetaString( "TRANSNAME", 255, -1 ) );
@@ -3747,7 +3743,7 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
             "Error getting the first long value from the max value returned from table : " + schemaTable );
         }
         counter = new Counter( previous + 1, 1 );
-        nextValue = Long.valueOf( counter.next() );
+        nextValue = counter.next();
         if ( counters != null ) {
           counters.put( lookup, counter );
         }
@@ -3755,7 +3751,7 @@ public class Database implements VariableSpace, LoggingObjectInterface, Closeabl
         throw new KettleDatabaseException( "Couldn't find maximum key value from table " + schemaTable );
       }
     } else {
-      nextValue = Long.valueOf( counter.next() );
+      nextValue = counter.next();
     }
 
     return nextValue;
