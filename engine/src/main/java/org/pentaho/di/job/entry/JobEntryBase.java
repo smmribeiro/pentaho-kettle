@@ -138,13 +138,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
    * Instantiates a new job entry base object.
    */
   public JobEntryBase() {
-    setLoggingObjectInUse( true );
-    name = null;
-    description = null;
-    log = new LogChannel( this );
-    attributesMap = new HashMap<>();
-    extensionDataMap = new HashMap<>();
-
+    this(null, null);
   }
 
   /**
@@ -156,13 +150,13 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
    *          the description of the job entry
    */
   public JobEntryBase( String name, String description ) {
-    setLoggingObjectInUse( true );
     setName( name );
     setDescription( description );
     setObjectId( null );
-    log = new LogChannel( this );
     attributesMap = new HashMap<>();
     extensionDataMap = new HashMap<>();
+    log = new LogChannel( this );
+    setLoggingObjectInUse( true );
   }
 
   /**

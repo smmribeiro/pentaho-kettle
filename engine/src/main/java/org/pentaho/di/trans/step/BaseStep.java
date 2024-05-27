@@ -577,7 +577,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
   public boolean init( StepMetaInterface smi, StepDataInterface sdi ) {
     sdi.setStatus( StepExecutionStatus.STATUS_INIT );
 
-    setLoggingObjectInUse(true);
+    setLoggingObjectInUse( true );
 
     String slaveNr = transMeta.getVariable( Const.INTERNAL_VARIABLE_SLAVE_SERVER_NUMBER );
     String clusterSize = transMeta.getVariable( Const.INTERNAL_VARIABLE_CLUSTER_SIZE );
@@ -822,7 +822,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
    */
   @Override
   public void dispose( StepMetaInterface smi, StepDataInterface sdi ) {
-    setLoggingObjectInUse(false);
+    setLoggingObjectInUse( false );
     sdi.setStatus( StepExecutionStatus.STATUS_DISPOSED );
   }
 

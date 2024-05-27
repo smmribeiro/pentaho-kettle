@@ -129,7 +129,13 @@ public class LoggingRegistry {
    * @return  the LogChanelID which is a String UUID key.
    */
   public String registerLoggingSource( Object object, boolean isPurgeable ) {
-    LoggingObject loggingSource = new LoggingObject( object );
+    LoggingObject loggingSource;
+
+    if ( object instanceof LoggingObject ) {
+      loggingSource = (LoggingObject) object;
+    } else {
+      loggingSource = new LoggingObject( object );
+    }
 
     // First attempt to find an existing LoggingSource if so return it, instead of adding a duplicate.
     LoggingObjectInterface found = findExistingLoggingSource( loggingSource );
