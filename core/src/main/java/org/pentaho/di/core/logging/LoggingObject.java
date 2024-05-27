@@ -47,8 +47,7 @@ public class LoggingObject implements LoggingObjectInterface {
 
   private LoggingObjectInterface parent;
 
-
-  private boolean loggingObjectInUse;
+  private boolean loggingObjectInUse = false;
   private Date registrationDate;
 
   private boolean gatheringMetrics;
@@ -60,7 +59,6 @@ public class LoggingObject implements LoggingObjectInterface {
     } else {
       grabObjectInformation( object );
     }
-    loggingObjectInUse = true;
   }
 
   @Override
@@ -167,7 +165,6 @@ public class LoggingObject implements LoggingObjectInterface {
   private void grabObjectInformation( Object object ) {
     objectType = LoggingObjectType.GENERAL;
     objectName = object.toString(); // name of class or name of object..
-    parent = null;
   }
 
   @Override
@@ -185,6 +182,8 @@ public class LoggingObject implements LoggingObjectInterface {
       return;
     }
 
+    LoggingRegistry registry = LoggingRegistry.getInstance();
+
     if ( parentObject instanceof LoggingObjectInterface ) {
 
       parent = (LoggingObjectInterface) parentObject;
@@ -195,27 +194,15 @@ public class LoggingObject implements LoggingObjectInterface {
       //
       if ( parent.getLogChannelId() != null ) {
         LoggingObjectInterface parentLoggingObject =
-          LoggingRegistry.getInstance().getLoggingObject( parent.getLogChannelId() );
+          registry.getLoggingObject( parent.getLogChannelId() );
         if ( parentLoggingObject != null ) {
           parent = parentLoggingObject;
         }
       }
-      return;
+    } else {
+      parent = new LoggingObject( parentObject );
+      registry.registerLoggingSource( parent );
     }
-
-    LoggingRegistry registry = LoggingRegistry.getInstance();
-
-    // Extract the hierarchy information from the parentObject...
-    //
-    LoggingObject check = new LoggingObject( parentObject );
-    LoggingObjectInterface loggingObject = registry.findExistingLoggingSource( check );
-    if ( loggingObject == null ) {
-      String logChannelId = registry.registerLoggingSource( check );
-      loggingObject = check;
-      check.setLogChannelId( logChannelId );
-    }
-
-    parent = loggingObject;
   }
 
   /**
