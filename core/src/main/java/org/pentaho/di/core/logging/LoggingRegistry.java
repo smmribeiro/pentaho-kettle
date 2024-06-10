@@ -139,11 +139,11 @@ public class LoggingRegistry {
       }
     }
 
+    String logChannelId = UUID.randomUUID().toString();
+    loggingSource.setLogChannelId( logChannelId );
+
     // Existing not found attempt to register the logging Source.
     synchronized ( this.syncObject ) {
-
-      String logChannelId = UUID.randomUUID().toString();
-      loggingSource.setLogChannelId( logChannelId );
 
       this.map.put( logChannelId, loggingSource );
 
