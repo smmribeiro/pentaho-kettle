@@ -1705,6 +1705,12 @@ public class Const {
   public static final String HIDE_INTERNAL_VARIABLES_DEFAULT = "Y";
 
   /**
+   Value to configure the initial state of the "Gather performance metrics" Checkbox on the "Run Options" dialog.
+   */
+  public static final String KETTLE_DEFAULT_GATHERING_METRICS = "KETTLE_DEFAULT_GATHERING_METRICS";
+
+
+  /**
    * rounds double f to any number of places after decimal point Does arithmetic using BigDecimal class to avoid integer
    * overflow while rounding
    *

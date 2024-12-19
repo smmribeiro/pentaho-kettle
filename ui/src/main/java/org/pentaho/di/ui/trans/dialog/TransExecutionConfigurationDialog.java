@@ -149,7 +149,7 @@ public class TransExecutionConfigurationDialog extends ConfigurationDialog {
   public void getData() {
     wSafeMode.setSelection( configuration.isSafeModeEnabled() );
     wClearLog.setSelection( configuration.isClearingLog() );
-    wGatherMetrics.setSelection( configuration.isGatheringMetrics() );
+    setGatherMetricsInitialValue();
 
     List<String> runConfigurations = new ArrayList<>();
     try {
@@ -173,6 +173,18 @@ public class TransExecutionConfigurationDialog extends ConfigurationDialog {
     wLogLevel.select( configuration.getLogLevel().getLevel() );
     getParamsData();
     getVariablesData();
+  }
+
+  private void setGatherMetricsInitialValue() {
+    // Is the Kettle property set?
+    String property = Const.NVL( System.getProperties().getProperty( Const.KETTLE_DEFAULT_GATHERING_METRICS ), null );
+    if ( null != property ) {
+      // Yes, so let's use it
+      wGatherMetrics.setSelection( Boolean.parseBoolean( property.trim() ) );
+    } else {
+      // No default value was defined, use what the given configuration states
+      wGatherMetrics.setSelection( configuration.isGatheringMetrics() );
+    }
   }
 
   public void getInfo() {

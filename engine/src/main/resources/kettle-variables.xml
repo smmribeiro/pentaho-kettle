@@ -660,4 +660,10 @@
     </description>
     <variable>KETTLE_COMPATIBILITY_SHOW_WARNINGS_EXECUTE_EVERY_INPUT_ROW</variable>
   </kettle-variable>
+
+  <kettle-variable>
+    <description>Use this variable to control the initial state for the "Gather performance metrics" checkbox on the "Run options" dialog. Possible values are 'true' (selected) or 'false' (unselected)</description>
+    <variable>KETTLE_DEFAULT_GATHERING_METRICS</variable>
+    <default-value>false</default-value>
+  </kettle-variable>
 </kettle-variables>

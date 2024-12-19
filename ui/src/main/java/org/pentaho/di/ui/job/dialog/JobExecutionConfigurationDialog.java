@@ -193,7 +193,7 @@ public class JobExecutionConfigurationDialog extends ConfigurationDialog {
     wClearLog.setSelection( configuration.isClearingLog() );
     wExpandRemote.setSelection( getConfiguration().isExpandingRemoteJob() );
     wLogLevel.select( DefaultLogLevel.getLogLevel().getLevel() );
-    wGatherMetrics.setSelection( configuration.isGatheringMetrics() );
+    setGatherMetricsInitialValue();
 
     List<String> runConfigurations = new ArrayList<>();
     try {
@@ -229,6 +229,18 @@ public class JobExecutionConfigurationDialog extends ConfigurationDialog {
 
     getParamsData();
     getVariablesData();
+  }
+
+  private void setGatherMetricsInitialValue() {
+    // Is the Kettle property set?
+    String property = Const.NVL( System.getProperties().getProperty( Const.KETTLE_DEFAULT_GATHERING_METRICS ), null );
+    if ( null != property ) {
+      // Yes, so let's use it
+      wGatherMetrics.setSelection( Boolean.parseBoolean( property.trim() ) );
+    } else {
+      // No default value was defined, use what the given configuration states
+      wGatherMetrics.setSelection( configuration.isGatheringMetrics() );
+    }
   }
 
   public void getInfo() {
