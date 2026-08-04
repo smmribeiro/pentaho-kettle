@@ -7366,7 +7366,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
           SpoonSessionManager.getInstance()
             .getAuthenticationContext( serverUrl );
 
-        authContext.storeJSessionId( sessionInfo.getJsessionId() );
+        authContext.storeJSessionId( sessionInfo.getJsessionId(), sessionInfo.getUsername() );
 
         // Reconnect to repository with session marker
         rep.connect( sessionInfo.getUsername(), AuthenticationContext.SESSION_AUTH_TOKEN );
