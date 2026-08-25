@@ -69,7 +69,6 @@
     <jboss-logging.version>3.4.3.Final</jboss-logging.version>
     <cglib-nodep.version>2.2</cglib-nodep.version>
     <js.version>1.7R3</js.version>
-    <mstor.version>0.9.13</mstor.version>
     <commons-cli.version>1.2</commons-cli.version>
     <log4jdbc.version>1.2</log4jdbc.version>
     <oro.version>2.0.8</oro.version>
@@ -672,17 +671,6 @@
     <dependency>
       <groupId>org.eclipse.angus</groupId>
       <artifactId>jakarta.mail</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.mnode.mstor</groupId>
-      <artifactId>mstor</artifactId>
-      <version>${mstor.version}</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
